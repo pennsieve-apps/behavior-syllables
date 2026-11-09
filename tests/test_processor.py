@@ -124,3 +124,17 @@ def test_kpms_needs_kpms_variant(fixture_dir, tmp_path):
     except ImportError:
         pass
     assert run(fixture_dir / "linked", tmp_path, METHOD="kpms").returncode == 2
+
+
+def test_model_json_round_trip(out3):
+    """model.json holds real numbers (nested lists), not numpy print strings."""
+    import numpy as np
+
+    m = json.loads((out3 / "model.json").read_text())
+    k = m["n_syllables"]
+    T = np.array(m["arhmm"]["transition_matrix"], dtype=float)
+    assert T.shape[0] == T.shape[1] >= k and np.allclose(T.sum(axis=1), 1, atol=1e-4)
+    W = np.array(m["arhmm"]["emission_weights"], dtype=float)
+    assert W.ndim == 3 and np.isfinite(W).all()
+    pcs = np.array(m["pca_components"], dtype=float)
+    assert pcs.ndim == 2 and pcs.shape[0] == len(np.array(m["pca_explained_variance_ratio"]))

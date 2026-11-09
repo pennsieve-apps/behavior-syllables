@@ -6,8 +6,7 @@ application:
     Finds recurring units of behaviour ("syllables": rest, locomotion, turns, rearing, grooming...)
     without labels, from pose-kinematics output: posture aligned to the animal's body, reduced with
     PCA, plus speed and turning, modelled jointly over all sessions with a sticky autoregressive
-    hidden Markov model (default; dynamax, CPU, MIT) or keypoint-MoSeq (variant kpms, GPU;
-    keypoint-MoSeq: Harvard licence, non-commercial academic use only). Reports syllable usage, bout durations,
+    hidden Markov model (MoSeq's core model; dynamax, CPU, permissive licences). Reports syllable usage, bout durations,
     transitions, usage differences between conditions (Welch t-test, Hedges g, FDR), an ethogram,
     and, when the session NWB has expert behaviour labels, how well these unsupervised syllables
     match them (agreement.csv, adjusted mutual information).
@@ -21,7 +20,6 @@ application:
     - unsupervised-learning
     - hidden-markov-model
     - moseq
-    - gpu
 runtime:
   cpu: 4096
   # Measured on the demo data (6 sessions x 12 min, 129,484 frames, linux/amd64 under emulation): README "Runtime".
@@ -30,19 +28,11 @@ runtime:
     - standard
   timeoutSeconds: 3600
 parameters:
-  - name: METHOD
-    type: string
-    description: "hmm: sticky autoregressive HMM (dynamax). kpms: keypoint-MoSeq (only in the kpms variant; non-commercial academic use)."
-    defaultValue: hmm
-    validValues:
-      - hmm
-      - kpms
   - name: N_SYLLABLES
     type: integer
     description: >-
       hmm: number of syllables (AR-HMM states). 0 = choose by held-out log-likelihood among 4, 6, ...,
-      MAX_SYLLABLES (the elbow: the smallest number reaching 90% of the best gain). kpms ignores it
-      (KAPPA sets how finely kpms splits behaviour).
+      MAX_SYLLABLES (the elbow: the smallest number reaching 90% of the best gain).
     defaultValue: 0
     min: 0
     max: 50
@@ -65,40 +55,30 @@ parameters:
     defaultValue: auto
   - name: MIN_DURATION_S
     type: number
-    description: hmm - bouts shorter than this (seconds) are merged into the longer neighbouring bout.
+    description: Bouts shorter than this (seconds) are merged into the longer neighbouring bout.
     defaultValue: 0.2
     min: 0
   - name: MIN_USAGE
     type: number
-    description: Syllables used in less than this fraction of frames are pooled into one last "rare" syllable (mostly matters for kpms).
+    description: Syllables used in less than this fraction of frames are pooled into one last "rare" syllable.
     defaultValue: 0.005
     min: 0
     max: 0.19
   - name: MAX_ITER
     type: integer
-    description: hmm - maximum EM iterations per fit.
+    description: Maximum EM iterations per fit.
     defaultValue: 100
     min: 1
   - name: STICKINESS
     type: number
     description: >-
-      hmm - Dirichlet pseudo-counts added to each state's self-transition (the "sticky" prior): larger =
-      longer syllables. The default gives a median syllable of ~0.37 s on the demo data (MoSeq's
-      syllables last ~0.3-0.5 s); summary.json reports the median and warns under 200 ms.
-    defaultValue: 100000
+      Sticky prior on self-transitions, relative to the data: each state's self-transition gets
+      STICKINESS x (frames per state) Dirichlet pseudo-counts, so it weighs the same against the data
+      whatever the cohort size. Larger = longer syllables. 10 gives a median syllable (Viterbi bout)
+      of ~0.37 s on the demo data (MoSeq's syllables last ~0.3-0.5 s); 0 = no stickiness (~0.13 s,
+      jitter-length). summary.json reports the median bout and warns under 200 ms.
+    defaultValue: 10
     min: 0
-  - name: KAPPA
-    type: number
-    description: >-
-      kpms - stickiness: larger = longer syllables. 1e6 targets the ~400 ms median syllable of the
-      keypoint-MoSeq paper at 30 fps; tune it so the median syllable duration (summary.json) is near that.
-    defaultValue: 1000000
-    min: 1
-  - name: KPMS_ITERS
-    type: integer
-    description: kpms - Gibbs iterations of the full model after 50 AR-only iterations (the paper uses ~500).
-    defaultValue: 200
-    min: 1
   - name: LABEL_TABLES
     type: string
     description: >-
@@ -109,17 +89,9 @@ parameters:
     type: string
     description: The sessions.csv column whose groups are compared (falls back to `group` when `condition` is empty).
     defaultValue: condition
-  - name: USE_GPU
-    type: string
-    description: kpms - auto (GPU when JAX sees one, else CPU, logged), true (fail with exit 3 without a GPU) or false.
-    defaultValue: auto
-    validValues:
-      - auto
-      - "true"
-      - "false"
   - name: SEED
     type: integer
-    description: Random seed (AR-HMM k-means initialisation, keypoint-MoSeq sampling, the agreement null).
+    description: Random seed (AR-HMM k-means initialisation, the agreement null).
     defaultValue: 42
   - name: THREADS
     type: integer
@@ -159,33 +131,6 @@ outputs:
       - text/csv
       - application/json
       - image/png
-variants:
-  - id: hmm
-    name: HMM (CPU)
-    default: true
-    description: Sticky autoregressive HMM (dynamax) on body-aligned posture and movement; CPU, permissive licences.
-    build:
-      args:
-        METHOD: hmm
-    runtime:
-      computeTypes: [standard]
-  - id: kpms
-    name: keypoint-MoSeq (GPU, academic use)
-    description: >-
-      keypoint-MoSeq on an NVIDIA GPU (T4 or newer; falls back to CPU, very slowly). keypoint-MoSeq is
-      licensed by Harvard for non-commercial research and academic use only; commercial use (including
-      fee-for-service and industry-sponsored work) needs a licence from Harvard OTD.
-    build:
-      args:
-        METHOD: kpms
-    runtime:
-      computeTypes: [gpu]
-      memory: 16384
-      timeoutSeconds: 14400
-    parameters:
-      METHOD:
-        defaultValue: kpms
-
 # How a release is tested before it is made public: the inputs a review run uses.
 # See app-deploy-service docs/app-manifest-review.md. The generator image has no pynwb, so the review
 # fixture has no labelled session NWB (agreement.csv is then not written).

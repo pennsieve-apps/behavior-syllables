@@ -49,7 +49,7 @@ DEFAULTS = {
     "USE_KEYPOINTS": "auto",
     "MIN_DURATION_S": "0.2",
     "MAX_ITER": "100",
-    "STICKINESS": "100000",
+    "STICKINESS": "10",
     "KAPPA": "1000000",
     "KPMS_ITERS": "200",
     "MIN_USAGE": "0.005",
@@ -277,14 +277,15 @@ def main() -> int:
                          for _, st, e in A.bouts(labels[sid], data[sid][0]["time"].to_numpy(float))
                          for a, b in [(data[sid][0]["time"].iloc[st], data[sid][0]["time"].iloc[e - 1])]]
     t_fit = time.monotonic() - t_fit
-    # Median syllable (bout) duration straight from the model, before short bouts are merged: keypoint
+    # Median Viterbi bout duration, before short bouts are merged (not the transition matrix's dwell time,
+    # which the stickiness prior lengthens; both are in summary.json): keypoint
     # jitter shows up as implausibly short syllables (Weinreb et al. 2024); MoSeq syllables last ~0.3-0.5 s.
     median_raw = float(np.median(raw_durations)) if raw_durations else None
     if median_raw is not None and median_raw < 0.2:
-        warnings_.append(f"median syllable duration from the model is {1000 * median_raw:.0f} ms (< 200 ms): "
+        warnings_.append(f"median Viterbi syllable (bout) duration is {1000 * median_raw:.0f} ms (< 200 ms, before merging): "
                          "syllables this short usually follow tracking jitter, not behaviour; raise STICKINESS "
                          "(hmm) or KAPPA (kpms), or check pose quality")
-    log.info("median syllable duration from the model: %.0f ms", 1000 * (median_raw or 0))
+    log.info("median Viterbi syllable (bout) duration before merging: %.0f ms", 1000 * (median_raw or 0))
     labels, mapping = A.relabel_by_usage(labels, params["MIN_USAGE"])
     n_syl = len(set(mapping.values()))
     rare_id = n_syl - 1 if len(set(mapping.values())) < len(mapping) else None
@@ -452,8 +453,8 @@ def main() -> int:
             p = F.model_selection(model_info["heldout_loglik_per_frame"], model_info["n_states"],
                                   top / "model_selection.png")
             figures.append({"path": f"{APP_NAME}/{p.name}", "caption":
-                            "How the number of syllables was chosen: log-likelihood of held-out data (every fifth "
-                            "minute) for models with 4, 6, ... states; the dashed line is the smallest number that "
+                            "How the number of syllables was chosen: log-probability of held-out data (every fifth "
+                            "512-frame chunk, about 17 s at 30 fps) for models with 4, 6, ... states; the dashed line is the smallest number that "
                             "reaches 90% of the best improvement over 4 states."})
     except Exception as exc:
         log.exception("figures failed: %s", exc)

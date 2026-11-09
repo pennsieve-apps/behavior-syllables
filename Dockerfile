@@ -5,16 +5,17 @@ ENV PIP_NO_CACHE_DIR=1 \
 
 WORKDIR /processor
 
-# Variant (app.yml `variants` sets it): hmm = Gaussian HMM (hmmlearn), CPU only, permissive licences;
-# kpms = also keypoint-MoSeq with JAX for CUDA 12 (Harvard non-commercial academic licence), which
-# falls back to the CPU when no GPU is visible.
+# METHOD=hmm (the published image): sticky autoregressive HMM (dynamax, CPU-only JAX), permissive
+# licences. METHOD=kpms builds an image that also has keypoint-MoSeq with JAX for CUDA 12; it is NOT
+# published (Harvard's licence does not cover hosted use for other institutions; see README).
 ARG METHOD=hmm
 
 # The complete pinned dependency set of the variant (no resolver; wheels, and pure-Python sdists such
 # as commentjson for kpms).
-COPY requirements.txt requirements-kpms.txt /processor/
+COPY requirements.txt requirements-tfp.txt requirements-kpms.txt /processor/
 RUN if [ "$METHOD" = "kpms" ]; then req=requirements-kpms.txt; else req=requirements.txt; fi \
     && pip install --no-deps --prefer-binary -r /processor/$req \
+    && if [ "$METHOD" != "kpms" ]; then pip install --no-deps --require-hashes -r /processor/requirements-tfp.txt; fi \
     && find /usr/local/lib/python3.12/site-packages -name '*.pyc' -delete \
     && find /usr/local/lib/python3.12/site-packages -type d -name tests -prune -exec rm -rf {} +
 

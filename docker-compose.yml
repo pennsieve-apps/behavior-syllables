@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        METHOD: hmm   # kpms for the keypoint-MoSeq variant
+        METHOD: hmm   # kpms builds the unpublished keypoint-MoSeq image (README)
     platform: linux/amd64
     mem_limit: 3g
     network_mode: none

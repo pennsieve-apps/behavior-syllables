@@ -217,7 +217,8 @@ def agreement(z_all, names, M_all, seed, z_by_session=None, prim_by_session=None
                          "enrichment": (inter / ms.sum()) / p_l if ms.sum() and p_l else None})
     prim = primary_label(names, M)
     ami = float(adjusted_mutual_info_score(prim, z))
-    # Temporal-structure null: syllable sequences circularly shifted within each session by >= 60 s.
+    # Temporal-structure null: syllable sequences circularly shifted within each session by a quarter to
+    # three quarters of its length.
     rng = np.random.default_rng(seed)
     null = []
     if z_by_session and prim_by_session:

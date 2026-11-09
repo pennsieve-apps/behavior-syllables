@@ -1,6 +1,5 @@
 # variant hmm (default): the complete pinned set, requirements.in (sticky AR-HMM with dynamax on CPU-only
 # JAX) resolved inside python:3.12.16-slim-bookworm (linux/amd64) on 2026-11-09 (pip install, then pip freeze).
-# dynamax depends on tfp-nightly (TensorFlow Probability's JAX substrate), pinned to the build resolved here.
 absl-py==2.5.1
 anyio==4.16.0
 attrs==26.1.0
@@ -58,7 +57,6 @@ scipy==1.18.1
 six==1.17.0
 soupsieve==4.0.1
 starlette==1.10.0
-tfp-nightly==0.26.0.dev20261109
 threadpoolctl==3.8.0
 truststore==0.10.5
 typing_extensions==4.16.0

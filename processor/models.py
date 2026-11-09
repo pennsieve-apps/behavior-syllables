@@ -6,13 +6,14 @@ Dirichlet "stickiness" prior on self-transitions, as in MoSeq's AR-HMM; Wiltschk
 et al. 2011) on the egocentric posture PCs plus log speed and angular speed, fitted jointly on every
 session's segments and decoded with Viterbi. Each state predicts the next frame linearly from the
 last one, so a syllable is a pose *trajectory*, not a cluster of single frames, and frame-to-frame
-keypoint jitter does not create spurious switches (Weinreb et al. 2024). N_SYLLABLES = 0 picks
-the number of states by held-out log-likelihood: every fifth 60-s chunk of every session is held
-out, models with 4, 6, ..., MAX_SYLLABLES states are fitted on the rest, and the smallest number
+keypoint jitter does not create spurious switches (Weinreb et al. 2024). STICKINESS is relative:
+STICKINESS x (frames per state) pseudo-counts on each self-transition (pseudo_counts()). N_SYLLABLES
+= 0 picks the number of states by held-out log-probability: every fifth 512-frame chunk (~17 s at
+30 fps) is held out, models with 4, 6, ..., MAX_SYLLABLES states are fitted on the rest, and the smallest number
 that reaches 90 % of the best held-out gain over 4 states is chosen (held-out likelihood keeps
 creeping up with more states on long recordings, so the elbow, not the maximum, is the choice).
 
-kpms: keypoint-MoSeq (Weinreb et al. 2024): an autoregressive HMM fitted jointly with a
+kpms (not published; see README): keypoint-MoSeq (Weinreb et al. 2024): an autoregressive HMM fitted jointly with a
 keypoint-noise model and the animal's centroid and heading, on the cleaned keypoints. AR-only
 fitting for 50 iterations, then the full model for KPMS_ITERS iterations, as in the kpms tutorial.
 """
@@ -30,8 +31,9 @@ CHUNK = 512   # frames per fitting batch element (17 s at 30 fps)
 
 
 def _chunks(seqs, size):
-    """Equal-length chunks of the segments (dynamax fits a batch of equal-length sequences); a
-    segment's remainder shorter than `size` is used only when the segment itself is that short."""
+    """Equal-length chunks of the segments (dynamax fits a batch of equal-length sequences). The
+    remainder of each segment shorter than `size` (and segments shorter than `size`) are left out of
+    the fit; every frame is still decoded (_decode)."""
     out = []
     for s in seqs:
         n = len(s) // size
@@ -45,13 +47,20 @@ def _arhmm(k, d, stickiness):
     return LinearAutoregressiveHMM(k, d, num_lags=1, transition_matrix_stickiness=float(stickiness))
 
 
+def pseudo_counts(stickiness, n_frames, k):
+    """STICKINESS is relative: the self-transition prior gets STICKINESS x (frames per state) pseudo-
+    counts, so the prior weighs the same against the data whatever the cohort size (a fixed number of
+    pseudo-counts would dominate a small dataset and vanish in a large one)."""
+    return float(stickiness) * n_frames / k
+
+
 def _fit_arhmm(chunks, k, seed, max_iter, stickiness, label="", init=None):
     import jax.numpy as jnp
     import jax.random as jr
 
     E = jnp.asarray(np.stack(chunks), dtype=jnp.float32)
     d = E.shape[-1]
-    hmm = _arhmm(k, d, stickiness)
+    hmm = _arhmm(k, d, pseudo_counts(stickiness, E.shape[0] * E.shape[1], k))
     inputs = jnp.stack([hmm.compute_inputs(e) for e in E])
     if init is None:
         params, props = hmm.initialize(jr.PRNGKey(seed), method="kmeans", emissions=E.reshape(-1, d))
@@ -132,6 +141,10 @@ def fit_arhmm(seqs, fps, n_syllables, max_k, seed, max_iter, stickiness):
     else:
         k = n_syllables
     hmm, params, fi = _fit_arhmm(chunks, k, seed, max_iter, stickiness, init=init)
+    T = np.asarray(params.transitions.transition_matrix)
+    dwell = 1.0 / np.maximum(1e-9, 1.0 - np.diag(T)) / fps
+    info.update(stickiness_pseudo_counts=pseudo_counts(stickiness, len(chunks) * size, k),
+                expected_dwell_s={"min": float(dwell.min()), "median": float(np.median(dwell)), "max": float(dwell.max())})
     info.update(n_states=k, converged=fi["converged"], n_iter=fi["n_iter"], fit_seconds=fi["fit_seconds"],
                 loglik_per_frame=fi["log_prob_per_frame"])
     log.info("AR-HMM: %d states fitted on %d frames (%d chunks of %d), %d EM iterations, %.1fs", k,

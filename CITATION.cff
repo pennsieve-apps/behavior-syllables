@@ -3,9 +3,8 @@ message: If you use this app, please cite it and the works it builds on, listed 
 type: software
 title: Behaviour Syllables
 abstract: 'Finds unsupervised behavioural syllables in pose kinematics: a sticky autoregressive hidden Markov model (Dynamax)
-  on body-aligned posture and movement (default) or keypoint-MoSeq (kpms variant, non-commercial academic licence), fitted
-  jointly over sessions; syllable usage, durations, transitions, condition differences and agreement with expert behaviour
-  labels. Part of the Pennsieve Markerless Behaviour workflow.'
+  on body-aligned posture and movement, fitted jointly over sessions; syllable usage, durations, transitions, condition differences
+  and agreement with expert behaviour labels. Part of the Pennsieve Markerless Behaviour workflow.'
 authors:
 - name: Pennsieve (University of Pennsylvania)
 contact:
@@ -309,6 +308,48 @@ references:
   doi: 10.48324/dandi.002047/0.261106.0903
   publisher:
     name: DANDI Archive
+- type: article
+  title: 'Scikit-learn: Machine Learning in Python'
+  authors:
+  - family-names: Pedregosa
+    given-names: Fabian
+  - family-names: Varoquaux
+    given-names: Gaël
+  - family-names: Gramfort
+    given-names: Alexandre
+  - family-names: Michel
+    given-names: Vincent
+  - family-names: Thirion
+    given-names: Bertrand
+  - family-names: Grisel
+    given-names: Olivier
+  - family-names: Blondel
+    given-names: Mathieu
+  - family-names: Prettenhofer
+    given-names: Peter
+  - family-names: Weiss
+    given-names: Ron
+  - family-names: Dubourg
+    given-names: Vincent
+  - family-names: Vanderplas
+    given-names: Jake
+  - family-names: Passos
+    given-names: Alexandre
+  - family-names: Cournapeau
+    given-names: David
+  - family-names: Brucher
+    given-names: Matthieu
+  - family-names: Perrot
+    given-names: Matthieu
+  - family-names: Duchesnay
+    given-names: Édouard
+  journal: Journal of Machine Learning Research
+  volume: 12
+  issue: '85'
+  start: '2825'
+  end: '2830'
+  year: 2011
+  url: https://jmlr.org/papers/v12/pedregosa11a.html
 - type: software
   title: 'scikit-learn: machine learning in Python'
   authors:
@@ -316,15 +357,6 @@ references:
   repository-code: https://github.com/scikit-learn/scikit-learn
   license: BSD-3-Clause
   version: 1.9.1
-- type: software
-  title: keypoint-moseq
-  authors:
-  - family-names: Weinreb
-    given-names: Caleb
-  - family-names: Datta
-    given-names: Sandeep Robert
-  repository-code: https://github.com/dattalab/keypoint-moseq
-  version: 0.8.6
 - type: software
   title: 'JAX: composable transformations of Python+NumPy programs'
   authors:
