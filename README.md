@@ -319,7 +319,8 @@ Anokhin; CC-BY-4.0):
 
 ## Acknowledgements
 
-MoSeq and keypoint-MoSeq are developed by the Datta lab (Harvard Medical School) with collaborators
+keypoint-MoSeq is provided by the President and Fellows of Harvard College (Harvard University),
+as its licence asks us to acknowledge. MoSeq and keypoint-MoSeq are developed by the Datta lab (Harvard Medical School) with collaborators
 including the Linderman lab (Stanford) and the Mathis labs (EPFL); Dynamax by the probml
 community (Linderman and Murphy labs), scikit-learn by its open-source community; NWB by the Neurodata Without Borders community. Thanks to the
 DANDI:002047 authors for sharing pose, expert behaviour labels and imaging together under CC-BY on
