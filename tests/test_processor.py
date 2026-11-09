@@ -81,7 +81,8 @@ def test_nwb_and_session_clock(out3):
 
     with pynwb.NWBHDF5IO(str(out3 / "wt-01_syllables.nwb"), "r") as io:
         nwb = io.read()
-        assert nwb.identifier == "fixture-wt-01"
+        assert nwb.identifier != "fixture-wt-01" and "fixture-wt-01" in nwb.notes   # new UUID, source noted
+        assert nwb.source_script_file_name
         df = nwb.processing["behavior"]["syllables"].to_dataframe()
         assert df["start_time"].iloc[0] == pytest.approx(5.0)
         assert set(df["syllable"]) <= {0, 1, 2}

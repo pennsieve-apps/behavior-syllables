@@ -28,7 +28,7 @@ runtime:
   memory: 4096
   computeTypes:
     - standard
-  timeoutSeconds: 7200
+  timeoutSeconds: 3600
 parameters:
   - name: METHOD
     type: string

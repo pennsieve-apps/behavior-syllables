@@ -1,7 +1,6 @@
 """<session_id>_syllables.nwb: a TimeIntervals table `syllables` (start_time, stop_time, syllable)."""
 from __future__ import annotations
 
-import uuid
 import warnings
 from datetime import datetime, timezone
 
@@ -15,14 +14,15 @@ def _dt(text):
         return None
 
 
-def write_syllables_nwb(path, sid, identity, t, z, method_note, app_version):
+def write_syllables_nwb(path, sid, identity, t, z, method_note, app_version, source_name="pose-kinematics output"):
     import pynwb
     from pynwb.epoch import TimeIntervals
     from pynwb.file import Subject
 
     from processor.analysis import bouts, frame_durations
 
-    start = _dt(identity.get("session_start_time")) or datetime(1970, 1, 1, tzinfo=timezone.utc)
+    from processor.common import nwbfile_kwargs
+
     subj = None
     if identity.get("subject"):
         s = {k: v for k, v in identity["subject"].items() if k in ("subject_id", "species", "sex", "genotype", "strain",
@@ -33,11 +33,9 @@ def write_syllables_nwb(path, sid, identity, t, z, method_note, app_version):
             subj = Subject(**{k: v for k, v in s.items() if v is not None})
         except Exception:
             subj = None
-    nwb = pynwb.NWBFile(session_description=identity.get("session_description") or f"session {sid}",
-                        identifier=identity.get("identifier") or str(uuid.uuid4()), session_start_time=start,
-                        timestamps_reference_time=_dt(identity.get("timestamps_reference_time")) or start,
-                        subject=subj, source_script=f"behavior-syllables {app_version}",
-                        notes=f"Unsupervised behavioural syllables for session {sid}: {method_note}")
+    kw = nwbfile_kwargs(identity, sid, "behavior-syllables", app_version,
+                        f"Unsupervised behavioural syllables for session {sid} ({method_note}), from {source_name}.")
+    nwb = pynwb.NWBFile(subject=subj, **kw)
     mod = nwb.create_processing_module("behavior", "Behavioural syllables (behavior-syllables)")
     ti = TimeIntervals(name="syllables", description=f"Syllable bouts ({method_note}); syllable 0 = the most used; "
                        "stop = time of the first frame after the bout.")

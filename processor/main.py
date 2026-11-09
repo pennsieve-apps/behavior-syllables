@@ -300,7 +300,8 @@ def main() -> int:
         z = labels[sid]
         pd.DataFrame({"time": t, "syllable": z}).to_csv(top / f"{sid}_syllables.csv", index=False, float_format="%.6f")
         write_syllables_nwb(top / f"{sid}_syllables.nwb", sid, meta.get("nwb") or {}, t, z,
-                            model_info.get("method", params["METHOD"]), app_version())
+                            model_info.get("method", params["METHOD"]), app_version(),
+                            source_name=next(x.path.name for x in found.sessions if x.session_id == sid))
         rows = A.per_session_usage(sid, z, t, n_syl)
         for r in rows:
             r.update({k: v for k, v in sheet.get(sid, {}).items() if k in ("subject_id", "condition", "group")})

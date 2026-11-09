@@ -143,7 +143,7 @@ the platform away from the variant) is something Harvard OTD should confirm.
 | File | Contents |
 |---|---|
 | `<session_id>_syllables.csv` | `time` (session clock, s), `syllable` (−1 = not modelled). |
-| `<session_id>_syllables.nwb` | Identity copied from the source NWB; `processing/behavior/syllables` (`TimeIntervals`: start_time, stop_time, syllable) and a `syllable` TimeSeries per frame. |
+| `<session_id>_syllables.nwb` | Session fields copied from the source NWB (via pose-kinematics), a new UUID `identifier` with the source noted in `notes`; passes nwb-inspect (schema, NWB Inspector, DANDI) on the demo outputs; `processing/behavior/syllables` (`TimeIntervals`: start_time, stop_time, syllable) and a `syllable` TimeSeries per frame. |
 | `syllables.csv` | Per syllable: `n_bouts, seconds, usage_time, usage_bouts, mean_duration_s, median_duration_s, mean_speed, mean_abs_angular_speed, mean_body_length`, `usage_<group>`, `q_value`, `top_label`, `top_label_fraction`. |
 | `usage.csv` | Per session × syllable: `seconds, usage_time, n_bouts, usage_bouts, bouts_per_minute` + sheet columns. |
 | `transitions.csv` | `from_syllable, to_syllable, count, probability` (bout to bout, pooled). |
@@ -194,7 +194,28 @@ for kpms to settle; the kpms FAQ asks for hours of data).
 
 ## Runtime
 
-RUNTIME_PLACEHOLDER
+`hmm` (default): `computeTypes: [standard]`, 4 vCPU / 4096 MiB, 1 h timeout. Measured on the demo
+data (6 sessions, 129 484 frames, defaults including model selection over 4–12 states):
+
+| Where | Wall time | Peak RSS | cgroup `memory.peak` |
+|---|---|---|---|
+| linux/amd64 image under emulation on an M-series Mac, `--cpus 4 --memory 4g`, run as the brief's Lambda test (`--read-only --user 65534:65534 --tmpfs /tmp`, HOME/TMPDIR under `/tmp/w`) | 653 s | 1.65 GB | 1.90 GB |
+| native arm64 Python (same code, for comparison) | 124 s | 1.81 GB | |
+
+Results are identical in both (10 syllables, median 367 ms, AMI 0.363). Most of the time is the
+five model-selection fits; `N_SYLLABLES` > 0 skips them. Memory is JAX's working set over all
+sessions' 512-frame chunks; it grows with the total number of frames (about 1.5 GB per 100 k frames
+above the ~0.4 GB baseline), so large cohorts need more memory, and more than ~1 h of video in total
+needs a longer timeout. These values are within the platform's Lambda limits for a dataset this
+size, so the platform may run it as a Lambda step. Image: 0.97 GB unpacked (`/usr/local`), 0.33 GB
+compressed.
+
+`kpms`: `computeTypes: [gpu]`, 16 GB, 4 h timeout; GPU numbers **to be measured on the dev compute
+node**. On this Mac (no GPU) the CUDA image starts, JAX logs that it cannot initialise CUDA, the app
+logs `USE_GPU=auto: cuda not available, using cpu` and finishes on CPU (fixture, 4 × 40 s,
+`KPMS_ITERS=3`: 487 s under emulation, peak RSS 1.85 GB, also as the Lambda test). keypoint-MoSeq
+on CPU is far too slow for real data; `USE_GPU=true` exits 3 without a GPU. Image: 3.8 GB
+compressed (JAX + CUDA 12.9 runtime wheels).
 
 ## Running it locally
 
