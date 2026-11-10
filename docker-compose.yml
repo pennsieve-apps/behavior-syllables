@@ -1,0 +1,15 @@
+services:
+  processor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        METHOD: hmm   # kpms builds the unpublished keypoint-MoSeq image (README)
+    platform: linux/amd64
+    mem_limit: 3g
+    network_mode: none
+    env_file:
+      - dev.env
+    volumes:
+      - ./data/fixture/linked:/data/input:ro
+      - ./data/output:/data/output

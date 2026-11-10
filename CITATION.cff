@@ -1,0 +1,396 @@
+cff-version: 1.2.0
+message: If you use this app, please cite it and the works it builds on, listed under references.
+type: software
+title: Behaviour Syllables
+abstract: 'Finds unsupervised behavioural syllables in pose kinematics: a sticky autoregressive hidden Markov model (Dynamax)
+  on body-aligned posture and movement, fitted jointly over sessions; syllable usage, durations, transitions, condition differences
+  and agreement with expert behaviour labels. Part of the Pennsieve Markerless Behaviour workflow.'
+authors:
+- name: Pennsieve (University of Pennsylvania)
+contact:
+- given-names: Joost
+  family-names: Wagenaar
+  orcid: https://orcid.org/0009-0004-5925-5451
+  affiliation: University of Pennsylvania
+repository-code: https://github.com/pennsieve-apps/behavior-syllables
+license: Apache-2.0
+keywords:
+- neuroscience
+- behavior
+- nwb
+- behavioral-syllables
+- hidden-markov-model
+- moseq
+references:
+- type: article
+  title: Mapping Sub-Second Structure in Mouse Behavior
+  authors:
+  - family-names: Wiltschko
+    given-names: Alexander B.
+  - family-names: Johnson
+    given-names: Matthew J.
+  - family-names: Iurilli
+    given-names: Giuliano
+  - family-names: Peterson
+    given-names: Ralph E.
+  - family-names: Katon
+    given-names: Jesse M.
+  - family-names: Pashkovski
+    given-names: Stan L.
+  - family-names: Abraira
+    given-names: Victoria E.
+  - family-names: Adams
+    given-names: Ryan P.
+  - family-names: Datta
+    given-names: Sandeep Robert
+  year: 2015
+  journal: Neuron
+  volume: 88
+  issue: '6'
+  start: '1121'
+  end: '1135'
+  doi: 10.1016/j.neuron.2015.11.031
+  identifiers:
+  - type: other
+    value: '26687221'
+    description: PubMed ID
+- type: article
+  title: A sticky HDP-HMM with application to speaker diarization
+  authors:
+  - family-names: Fox
+    given-names: Emily B.
+  - family-names: Sudderth
+    given-names: Erik B.
+  - family-names: Jordan
+    given-names: Michael I.
+  - family-names: Willsky
+    given-names: Alan S.
+  year: 2011
+  journal: The Annals of Applied Statistics
+  volume: 5
+  issue: 2A
+  start: '1020'
+  end: '1056'
+  doi: 10.1214/10-AOAS395
+- type: article
+  title: 'Dynamax: A Python package for probabilistic state space modeling with JAX'
+  authors:
+  - family-names: Linderman
+    given-names: Scott W.
+  - family-names: Chang
+    given-names: Peter
+  - family-names: Harper-Donnelly
+    given-names: Giles
+  - family-names: Kara
+    given-names: Aleyna
+  - family-names: Li
+    given-names: Xinglong
+  - family-names: Duran-Martin
+    given-names: Gerardo
+  - family-names: Murphy
+    given-names: Kevin
+  year: 2025
+  journal: Journal of Open Source Software
+  volume: 10
+  issue: '108'
+  start: '7069'
+  doi: 10.21105/joss.07069
+- type: article
+  title: 'Keypoint-MoSeq: parsing behavior by linking point tracking to pose dynamics'
+  authors:
+  - family-names: Weinreb
+    given-names: Caleb
+  - family-names: Pearl
+    given-names: Jonah E.
+  - family-names: Lin
+    given-names: Sherry
+  - family-names: Osman
+    given-names: Mohammed Abdal Monium
+  - family-names: Zhang
+    given-names: Libby
+  - family-names: Annapragada
+    given-names: Sidharth
+  - family-names: Conlin
+    given-names: Eli
+  - family-names: Hoffmann
+    given-names: Red
+  - family-names: Makowska
+    given-names: Sofia
+  - family-names: Gillis
+    given-names: Winthrop F.
+  - family-names: Jay
+    given-names: Maya
+  - family-names: Ye
+    given-names: Shaokai
+  - family-names: Mathis
+    given-names: Alexander
+  - family-names: Mathis
+    given-names: Mackenzie W.
+  - family-names: Pereira
+    given-names: Talmo
+  - family-names: Linderman
+    given-names: Scott W.
+  - family-names: Datta
+    given-names: Sandeep Robert
+  year: 2024
+  journal: Nature Methods
+  volume: 21
+  issue: '7'
+  start: '1329'
+  end: '1339'
+  doi: 10.1038/s41592-024-02318-2
+  identifiers:
+  - type: other
+    value: '38997595'
+    description: PubMed ID
+- type: article
+  title: A tutorial on hidden Markov models and selected applications in speech recognition
+  authors:
+  - family-names: Rabiner
+    given-names: L.R.
+  year: 1989
+  journal: Proceedings of the IEEE
+  volume: 77
+  issue: '2'
+  start: '257'
+  end: '286'
+  doi: 10.1109/5.18626
+- type: article
+  title: Error bounds for convolutional codes and an asymptotically optimum decoding algorithm
+  authors:
+  - family-names: Viterbi
+    given-names: A.
+  year: 1967
+  journal: IEEE Transactions on Information Theory
+  volume: 13
+  issue: '2'
+  start: '260'
+  end: '269'
+  doi: 10.1109/TIT.1967.1054010
+- type: article
+  title: A study of animal action segmentation algorithms across supervised, unsupervised, and semi-supervised learning paradigms
+  authors:
+  - family-names: Blau
+    given-names: Ari
+  - family-names: Schaffer
+    given-names: Evan S
+  - family-names: Mishra
+    given-names: Neeli
+  - family-names: Miska
+    given-names: Nathaniel J
+  - name: International Brain Laboratory
+  - family-names: Paninski
+    given-names: Liam
+  - family-names: Whiteway
+    given-names: Matthew R
+  year: 2024
+  journal: Neurons, Behavior, Data analysis, and Theory
+  doi: 10.51628/001c.127770
+  identifiers:
+  - type: other
+    value: '40843338'
+    description: PubMed ID
+- type: conference-paper
+  title: Information theoretic measures for clusterings comparison
+  authors:
+  - family-names: Vinh
+    given-names: Nguyen Xuan
+  - family-names: Epps
+    given-names: Julien
+  - family-names: Bailey
+    given-names: James
+  year: 2009
+  start: '1073'
+  end: '1080'
+  collection-title: Proceedings of the 26th Annual International Conference on Machine Learning
+  doi: 10.1145/1553374.1553511
+- type: article
+  title: 'Controlling the False Discovery Rate: A Practical and Powerful Approach to Multiple Testing'
+  authors:
+  - family-names: Benjamini
+    given-names: Yoav
+  - family-names: Hochberg
+    given-names: Yosef
+  year: 1995
+  journal: 'Journal of the Royal Statistical Society Series B: Statistical Methodology'
+  volume: 57
+  issue: '1'
+  start: '289'
+  end: '300'
+  doi: 10.1111/j.2517-6161.1995.tb02031.x
+- type: article
+  title: THE GENERALIZATION OF ‘STUDENT'S’ PROBLEM WHEN SEVERAL DIFFERENT POPULATION VARLANCES ARE INVOLVED
+  authors:
+  - family-names: WELCH
+    given-names: B. L.
+  year: 1947
+  journal: Biometrika
+  volume: 34
+  issue: 1-2
+  start: '28'
+  end: '35'
+  doi: 10.1093/biomet/34.1-2.28
+  identifiers:
+  - type: other
+    value: '20287819'
+    description: PubMed ID
+- type: article
+  title: On a Test of Whether one of Two Random Variables is Stochastically Larger than the Other
+  authors:
+  - family-names: Mann
+    given-names: H. B.
+  - family-names: Whitney
+    given-names: D. R.
+  year: 1947
+  journal: The Annals of Mathematical Statistics
+  volume: 18
+  issue: '1'
+  start: '50'
+  end: '60'
+  doi: 10.1214/aoms/1177730491
+- type: article
+  title: Distribution Theory for Glass's Estimator of Effect size and Related Estimators
+  authors:
+  - family-names: Hedges
+    given-names: Larry V.
+  year: 1981
+  journal: Journal of Educational Statistics
+  volume: 6
+  issue: '2'
+  start: '107'
+  end: '128'
+  doi: 10.3102/10769986006002107
+- type: article
+  title: The Neurodata Without Borders ecosystem for neurophysiological data science
+  authors:
+  - family-names: Rübel
+    given-names: Oliver
+  - family-names: Tritt
+    given-names: Andrew
+  - family-names: Ly
+    given-names: Ryan
+  - family-names: Dichter
+    given-names: Benjamin K
+  - family-names: Ghosh
+    given-names: Satrajit
+  - family-names: Niu
+    given-names: Lawrence
+  - family-names: Baker
+    given-names: Pamela
+  - family-names: Soltesz
+    given-names: Ivan
+  - family-names: Ng
+    given-names: Lydia
+  - family-names: Svoboda
+    given-names: Karel
+  - family-names: Frank
+    given-names: Loren
+  - family-names: Bouchard
+    given-names: Kristofer E
+  year: 2022
+  journal: eLife
+  volume: 11
+  start: e78362
+  doi: 10.7554/eLife.78362
+  identifiers:
+  - type: other
+    value: '36193886'
+    description: PubMed ID
+- type: data
+  title: Hippocampal CA1 one-photon calcium imaging and pose-tracked behavior in wild-type and 5xFAD mice across four behavioral
+    paradigms
+  authors:
+  - family-names: Plusnin
+    given-names: Viktor
+  - family-names: Pospelov
+    given-names: Nikita
+  year: 2026
+  doi: 10.48324/dandi.002047/0.261106.0903
+  publisher:
+    name: DANDI Archive
+- type: article
+  title: 'Scikit-learn: Machine Learning in Python'
+  authors:
+  - family-names: Pedregosa
+    given-names: Fabian
+  - family-names: Varoquaux
+    given-names: Gaël
+  - family-names: Gramfort
+    given-names: Alexandre
+  - family-names: Michel
+    given-names: Vincent
+  - family-names: Thirion
+    given-names: Bertrand
+  - family-names: Grisel
+    given-names: Olivier
+  - family-names: Blondel
+    given-names: Mathieu
+  - family-names: Prettenhofer
+    given-names: Peter
+  - family-names: Weiss
+    given-names: Ron
+  - family-names: Dubourg
+    given-names: Vincent
+  - family-names: Vanderplas
+    given-names: Jake
+  - family-names: Passos
+    given-names: Alexandre
+  - family-names: Cournapeau
+    given-names: David
+  - family-names: Brucher
+    given-names: Matthieu
+  - family-names: Perrot
+    given-names: Matthieu
+  - family-names: Duchesnay
+    given-names: Édouard
+  journal: Journal of Machine Learning Research
+  volume: 12
+  issue: '85'
+  start: '2825'
+  end: '2830'
+  year: 2011
+  url: https://jmlr.org/papers/v12/pedregosa11a.html
+- type: software
+  title: 'scikit-learn: machine learning in Python'
+  authors:
+  - name: The scikit-learn developers
+  repository-code: https://github.com/scikit-learn/scikit-learn
+  license: BSD-3-Clause
+  version: 1.9.1
+- type: software
+  title: 'JAX: composable transformations of Python+NumPy programs'
+  authors:
+  - family-names: Bradbury
+    given-names: James
+  - family-names: Frostig
+    given-names: Roy
+  - family-names: Hawkins
+    given-names: Peter
+  - family-names: Johnson
+    given-names: Matthew James
+  - family-names: Katariya
+    given-names: Yash
+  - family-names: Leary
+    given-names: Chris
+  - family-names: Maclaurin
+    given-names: Dougal
+  - family-names: Necula
+    given-names: George
+  - family-names: Paszke
+    given-names: Adam
+  - family-names: VanderPlas
+    given-names: Jake
+  - family-names: Wanderman-Milne
+    given-names: Skye
+  - family-names: Zhang
+    given-names: Qiao
+  repository-code: https://github.com/jax-ml/jax
+  license: Apache-2.0
+  year: 2018
+- type: software
+  title: PyNWB
+  authors:
+  - name: Neurodata Without Borders
+  repository-code: https://github.com/NeurodataWithoutBorders/pynwb
+  license: BSD-3-Clause
+  version: 4.2.0

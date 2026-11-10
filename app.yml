@@ -1,0 +1,143 @@
+# yaml-language-server: $schema=https://schemas.pennsieve.io/app-manifest/v1.json
+schemaVersion: "1.0"
+application:
+  name: Behaviour Syllables
+  description: >-
+    Finds recurring units of behaviour ("syllables": rest, locomotion, turns, rearing, grooming...)
+    without labels, from pose-kinematics output: posture aligned to the animal's body, reduced with
+    PCA, plus speed and turning, modelled jointly over all sessions with a sticky autoregressive
+    hidden Markov model (MoSeq's core model; dynamax, CPU, permissive licences). Reports syllable usage, bout durations,
+    transitions, usage differences between conditions (Welch t-test, Hedges g, FDR), an ethogram,
+    and, when the session NWB has expert behaviour labels, how well these unsupervised syllables
+    match them (agreement.csv, adjusted mutual information).
+  type: processor
+  tags:
+    - neuroscience
+    - behavior
+    - nwb
+    - video
+    - behavioral-syllables
+    - unsupervised-learning
+    - hidden-markov-model
+    - moseq
+runtime:
+  cpu: 4096
+  # Measured on the demo data (6 sessions x 12 min, 129,484 frames, linux/amd64 under emulation): README "Runtime".
+  memory: 4096
+  computeTypes:
+    - standard
+  timeoutSeconds: 3600
+parameters:
+  - name: N_SYLLABLES
+    type: integer
+    description: >-
+      hmm: number of syllables (AR-HMM states). 0 = choose by held-out log-likelihood among 4, 6, ...,
+      MAX_SYLLABLES (the elbow: the smallest number reaching 90% of the best gain).
+    defaultValue: 0
+    min: 0
+    max: 50
+  - name: MAX_SYLLABLES
+    type: integer
+    description: hmm with N_SYLLABLES=0 - the largest number of syllables tried.
+    defaultValue: 12
+    min: 4
+    max: 50
+  - name: N_PCS
+    type: integer
+    description: Posture principal components used (hmm); 0 = as many as explain 90% of the egocentric pose variance, at most 8.
+    defaultValue: 0
+    min: 0
+  - name: USE_KEYPOINTS
+    type: string
+    description: >-
+      Comma-separated keypoints to model; auto = those in every session, missing in fewer than 20% of
+      frames, without tail tips (keypoint-MoSeq's advice for rodents).
+    defaultValue: auto
+  - name: MIN_DURATION_S
+    type: number
+    description: Bouts shorter than this (seconds) are merged into the longer neighbouring bout.
+    defaultValue: 0.2
+    min: 0
+  - name: MIN_USAGE
+    type: number
+    description: Syllables used in less than this fraction of frames are pooled into one last "rare" syllable.
+    defaultValue: 0.005
+    min: 0
+    max: 0.19
+  - name: MAX_ITER
+    type: integer
+    description: Maximum EM iterations per fit.
+    defaultValue: 100
+    min: 1
+  - name: STICKINESS
+    type: number
+    description: >-
+      Sticky prior on self-transitions, relative to the data: each state's self-transition gets
+      STICKINESS x (frames per state) Dirichlet pseudo-counts, so it weighs the same against the data
+      whatever the cohort size. Larger = longer syllables. 10 gives a median syllable (Viterbi bout)
+      of ~0.37 s on the demo data (MoSeq's syllables last ~0.3-0.5 s); 0 = no stickiness (~0.13 s,
+      jitter-length). summary.json reports the median bout and warns under 200 ms.
+    defaultValue: 10
+    min: 0
+  - name: LABEL_TABLES
+    type: string
+    description: >-
+      Behaviour label tables in the session NWB to compare with (comma-separated TimeIntervals names);
+      auto = every TimeIntervals table except epochs, trials, invalid_times and spatial zones; none = skip.
+    defaultValue: auto
+  - name: GROUP_BY
+    type: string
+    description: The sessions.csv column whose groups are compared (falls back to `group` when `condition` is empty).
+    defaultValue: condition
+  - name: SEED
+    type: integer
+    description: Random seed (AR-HMM k-means initialisation, the agreement null).
+    defaultValue: 42
+  - name: THREADS
+    type: integer
+    description: Threads for numpy/BLAS; 0 = from the container's CPU quota.
+    defaultValue: 0
+    min: 0
+inputs:
+  - name: kinematics
+    description: >-
+      pose-kinematics output: <session_id>_kinematics.parquet per session (cleaned keypoints, centroid,
+      heading, speed) and its sessions.csv (condition per session).
+    # pose-kinematics' `kinematics` output types (only the Parquet files and sessions.csv are read).
+    mediaTypes:
+      - "application/x-hdf5; profile=nwb"
+      - application/vnd.apache.parquet
+      - text/csv
+      - application/json
+      - image/png
+    placement: subfolder
+    required: true
+  - name: session
+    description: >-
+      Optional session NWB files with labelled behaviour intervals (e.g. DANDI 002047: rear, freezing,
+      locomotion, rest, walk), matched by the NWB identifier pose-kinematics recorded; gives agreement.csv.
+    mediaTypes:
+      - "application/x-hdf5; profile=nwb"
+    placement: subfolder
+    required: false
+outputs:
+  - name: syllables
+    description: >-
+      behavior-syllables/<session_id>_syllables.csv (time, syllable), <session_id>_syllables.nwb
+      (TimeIntervals `syllables`), syllables.csv, usage.csv, transitions.csv, group_stats.csv,
+      agreement.csv (with labels), model.json, figures, summary.json, provenance.json.
+    mediaTypes:
+      - "application/x-hdf5; profile=nwb"
+      - text/csv
+      - application/json
+      - image/png
+# How a release is tested before it is made public: the inputs a review run uses.
+# See app-deploy-service docs/app-manifest-review.md. The generator image has no pynwb, so the review
+# fixture has no labelled session NWB (agreement.csv is then not written).
+review:
+  version: 1
+  generate:
+    command: python -m tests.make_fixture "$REVIEW_INPUT_DIR" --layout linked --seconds 90 --no-nwb
+    root: linked
+  parameters:
+    N_SYLLABLES: 3

@@ -1,0 +1,6 @@
+# TensorFlow Probability's JAX substrate, which dynamax imports. There is no stable release that works
+# with JAX 0.12 (tensorflow-probability 0.25.0, Nov 2024, fails on import: jax.interpreters.xla has no
+# pytype_aval_mappings) and dynamax itself requires tfp-nightly, so the nightly resolved on 2026-11-09 is
+# pinned by version and wheel hash (pure Python, the same file on every platform).
+tfp-nightly==0.26.0.dev20261109 \
+    --hash=sha256:e30e873b99536b2f56df1b9e75acbabb942c6cd6289787145b9ff98f36805254
