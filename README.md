@@ -70,7 +70,7 @@ keypoint-MoSeq goes further than this app's AR-HMM (it also models keypoint nois
 heading jointly with the AR-HMM, by Gibbs sampling). The repository keeps a keypoint-MoSeq path
 (`METHOD=kpms`, `docker build --build-arg METHOD=kpms`, `requirements-kpms.txt`, `fit_kpms` in
 `processor/models.py`; JAX for CUDA 12 with CPU fallback), but **it is not part of the published
-app**: v0.1.0 builds and publishes only the sticky AR-HMM image, and `app.yml` declares no
+app**: v0.1.x builds and publishes only the sticky AR-HMM image, and `app.yml` declares no
 variants.
 
 Why: keypoint-MoSeq's licence (`licenses/keypoint-moseq-LICENSE.md`, read 2026-11-09) grants a
