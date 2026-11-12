@@ -1,5 +1,6 @@
 cff-version: 1.2.0
-message: If you use this app, please cite it and the works it builds on, listed under references.
+message: >-
+  If you use this app, please cite the work it implements (preferred-citation), this release, and Pennsieve (RRID:SCR_021677); the other works it builds on are listed under references.
 type: software
 title: Behaviour Syllables
 abstract: 'Finds unsupervised behavioural syllables in pose kinematics: a sticky autoregressive hidden Markov model (Dynamax)
@@ -21,6 +22,40 @@ keywords:
 - behavioral-syllables
 - hidden-markov-model
 - moseq
+# The work this app implements; the release report's "How to cite" puts it first.
+preferred-citation:
+  type: article
+  title: Mapping Sub-Second Structure in Mouse Behavior
+  authors:
+  - family-names: Wiltschko
+    given-names: Alexander B.
+  - family-names: Johnson
+    given-names: Matthew J.
+  - family-names: Iurilli
+    given-names: Giuliano
+  - family-names: Peterson
+    given-names: Ralph E.
+  - family-names: Katon
+    given-names: Jesse M.
+  - family-names: Pashkovski
+    given-names: Stan L.
+  - family-names: Abraira
+    given-names: Victoria E.
+  - family-names: Adams
+    given-names: Ryan P.
+  - family-names: Datta
+    given-names: Sandeep Robert
+  year: 2015
+  journal: Neuron
+  volume: 88
+  issue: '6'
+  start: '1121'
+  end: '1135'
+  doi: 10.1016/j.neuron.2015.11.031
+  identifiers:
+  - type: other
+    value: '26687221'
+    description: PubMed ID
 references:
 - type: article
   title: Mapping Sub-Second Structure in Mouse Behavior
